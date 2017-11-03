@@ -88,6 +88,11 @@ class AppController extends Controller
                 'action' => 'login',
             ]
         ]);
+
+        $user = $this->Auth->user();
+        if (isset($user)) {
+            $this->set(compact('user'));
+        }
     }
 
     /**

@@ -43,6 +43,10 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <a href="" class="navbar-brand">あにここ！</a>
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
+            <?php if(isset($user)) : ?>
+            <li class="nav-item"><?= $this->Html->link($user['username'] . 'でログイン中', ['controller' => 'users', 'action' => 'index'], ['class' => 'nav-link']); ?></li>
+            <li class="nav-item"><?= $this->Html->link('ログアウト', ['controller' => 'users', 'action' => 'logout'], ['class' => 'nav-link']) ?></li>
+            <?php endif; ?>
         </ul>
         <?php if ($this->request->action == 'index' && $this->request->controller == 'Animes') : ?>
             <?= $this->Form->create('Anime', ['valueSources' => 'query', 'class' => 'form-inline mt-2 mt-md-0']) ?>

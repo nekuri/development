@@ -47,8 +47,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             <ul class="right">
                 <?php if(isset($user)) : ?>
                 <li><?= $user['username']; ?>でログイン中</li>
-                <?php endif; ?>
                 <li><?= $this->Html->link('ログアウト', ['controller' => 'users', 'action' => 'logout']) ?></li>
+                <?php endif; ?>
             </ul>
         </div>
     </nav>
