@@ -1,0 +1,25 @@
+.ml-6,
+.mx-6 {
+  margin-left: 6rem !important;
+}
+
+.ml-7,
+.mx-7 {
+  margin: 20px 0 20px 25% !important;
+}
+
+.float-none {
+    clear: both !important;
+}
+
+.border-dot {
+    border: 1px dotted #eee !important;
+}
+
+.ml-25p {
+    margin-left:10% !important;
+}
+
+.large-text {
+    font-size: 26px;
+}

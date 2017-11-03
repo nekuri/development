@@ -1,0 +1,58 @@
+select {
+    width:10%;
+}
+
+ul.view-list {
+    width:100%;
+    list-style:none;
+}
+
+ul.view-list li{
+    display:inline-block;
+    vertical-align: middle;
+}
+
+li.view-right-area {
+    margin-left:50px;
+}
+
+li.view-image {
+    margin-top:10px;
+}
+
+div.review-area {
+    margin-bottom:100px;
+}
+
+ul.anime-list {
+    width:100%;
+    list-style:none;
+}
+
+ul.anime-list li {
+    float:left;
+    margin-bottom: 20px;
+    width:20%;
+}
+
+ul.anime-list li img {
+    height:200px;
+}
+
+div.paginator {
+    clear: both;
+    margin-bottom:50px;
+}
+
+p.counter {
+    text-align:center;
+}
+
+.center-text{
+    text-align:center;
+}
+
+.middle-text {
+    font-size:20px;
+    font-weight:bold;
+}
