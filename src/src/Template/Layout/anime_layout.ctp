@@ -46,6 +46,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             <?php if(isset($user)) : ?>
             <li class="nav-item"><?= $this->Html->link($user['username'] . 'でログイン中', ['controller' => 'users', 'action' => 'index'], ['class' => 'nav-link']); ?></li>
             <li class="nav-item"><?= $this->Html->link('ログアウト', ['controller' => 'users', 'action' => 'logout'], ['class' => 'nav-link']) ?></li>
+            <?php else : ?>
+            <li class="nav-item"><?= $this->Html->link('ログイン', ['controller' => 'users', 'action' => 'login'], ['class' => 'nav-link']); ?></li>
             <?php endif; ?>
         </ul>
         <?php if ($this->request->action == 'index' && $this->request->controller == 'Animes') : ?>
