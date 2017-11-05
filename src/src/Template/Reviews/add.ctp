@@ -10,6 +10,7 @@
     </ul>
 </nav>
 <main role="main" class="col-sm-9 ml-sm-auto col-md-10 pt-3">
+<?= $this->Flash->render() ?>
     <?= $this->Form->create($review, ['novalidate' => true]) ?>
     <fieldset>
         <legend><?= __('レビューを書く') ?></legend>

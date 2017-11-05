@@ -3,24 +3,23 @@
  * @var \App\View\AppView $this
  */
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('List Members'), ['action' => 'index']) ?></li>
+<nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item"><?= $this->Html->link(__('アニメ一覧'), ['controller' => 'Animes', 'action' => 'index'], ['class' => 'nav-link']) ?></li>
     </ul>
 </nav>
-<div class="members form large-9 medium-8 columns content">
+<main role="main" class="col-sm-9 ml-sm-auto col-md-10 pt-3">
+<h2>仮登録画面</h2>
+<p>登録するメールアドレスを入力してください</p>
     <?= $this->Form->create($member) ?>
-    <fieldset>
-        <legend><?= __('Add Member') ?></legend>
-        <?php
-            echo $this->Form->control('name');
-            echo $this->Form->control('email');
-            echo $this->Form->control('password');
-            echo $this->Form->control('secret_kind');
-            echo $this->Form->control('secret_question');
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
+<table class="table">
+    <tr>
+    <th>メールアドレス</th><td><?= $this->Form->input('email', ['label' => false]) ?></td>
+    </tr>
+    <tr>
+    <th>メールアドレス(確認)</th><td><?= $this->Form->input('email_confirm', ['label' => false]) ?></td>
+    </tr>
+</table>
+    <?= $this->Form->button(__('送信')) ?>
     <?= $this->Form->end() ?>
-</div>
+</main>

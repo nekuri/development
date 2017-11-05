@@ -50,11 +50,12 @@ class MembersController extends AppController
      */
     public function add()
     {
-        $member = $this->Members->newEntity();
+        $this->loadModel('Temporary');
+        $member = $this->Temporary->newEntity();
         if ($this->request->is('post')) {
-            $member = $this->Members->patchEntity($member, $this->request->getData());
-            if ($this->Members->save($member)) {
-                $this->Flash->success(__('The member has been saved.'));
+            $member = $this->Temporary->patchEntity($member, $this->request->getData());
+            if ($this->Temporary->save($member)) {
+                $this->Flash->success(__('本登録用のメールを送りました。'));
 
                 return $this->redirect(['action' => 'index']);
             }

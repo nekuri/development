@@ -85,6 +85,8 @@ class AppController extends Controller
         $this->loadComponent('Search.Prg', [
             'actions' => ['index']
         ]);
+
+        $this->viewBuilder()->setLayout('anime_layout');
     }
 
     /**

@@ -28,7 +28,6 @@ class AnimesController extends AppController
     {
         parent::initialize();
 
-        $this->viewBuilder()->setLayout('anime_layout');
         if (count($this->Animes->find('all')->all()) == 0) {
             $years = Configure::read('Common.anime_years');
             $cools = Configure::read('Common.anime_cools');

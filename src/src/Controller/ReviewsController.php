@@ -56,27 +56,28 @@ class ReviewsController extends AppController
      */
     public function add($id = null)
     {
-        $this->viewBuilder()->setLayout('anime_layout');
         $stars = Configure::read('Common.reviews');
         $review = $this->Reviews->newEntity();
         if ($this->request->is('post')) {
             $review = $this->Reviews->patchEntity($review, $this->request->getData());
             $review['anime_id'] = $id;
-
-        try {
             $conn = ConnectionManager::get('default');
-            $conn->begin();
-            if ($this->Reviews->save($review)) {
-                $this->Flash->success(__('レビューを投稿しました。'));
-                $conn->commit();
-                return $this->redirect(['controller' => 'animes', 'action' => 'view', $id]);
+
+            try {
+                if (!empty($review->errors())) {
+                    throw new \Exception('入力内容に誤りがあります。');
+                }
+                $conn->begin();
+                if ($this->Reviews->save($review)) {
+                    $conn->commit();
+                    $this->redirect(['controller' => 'animes', 'action' => 'view', $id]);
+                    $this->Flash->success(__('レビューを投稿しました。'));
+                }
+            } catch(\Exception $e) {
+                $this->Flash->error(__($e->getMessage()));
+                //TODO エラー処理
+                $conn->rollback();
             }
-        } catch(\Exception $e) {
-            //TODO エラー処理
-            $conn->rollback();
-            return;
-        }
-            $this->Flash->error(__('入力内容に誤りがあります。'));
         }
         $this->set(compact('stars', 'review', 'id'));
         $this->set('_serialize', ['review']);

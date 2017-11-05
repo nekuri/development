@@ -10,6 +10,7 @@
 <li class="nav-item"><?= $this->Html->link('レビューを書く', ['controller' => 'reviews', 'action' => 'add', $anime->api_id], ['class' => 'nav-link']) ?></li>
 </nav>
 <main role="main" class="col-sm-9 ml-sm-auto col-md-10 mb-5 pt-3">
+<?= $this->Flash->render() ?>
     <h2><?= h($anime->title) ?></h2>
     <div class="float-left ml-5">
         <?php if (isset($anime->photo)) : ?>
