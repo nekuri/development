@@ -5,6 +5,11 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\ORM\TableRegistry;
+use Cake\Mailer\Email;
+use Cake\Utility\Hash;
+// MailerAwareTrait追加
+use Cake\Mailer\MailerAwareTrait;
 
 /**
  * Members Model
@@ -21,6 +26,8 @@ use Cake\Validation\Validator;
  */
 class MembersTable extends Table
 {
+    // MailerAwareTrait追加(getMailer()が実装されてる)
+    use MailerAwareTrait;
 
     /**
      * Initialize method
@@ -91,5 +98,27 @@ class MembersTable extends Table
         $rules->add($rules->isUnique(['email']));
 
         return $rules;
+    }
+
+    public function saveAndSendEmail($data)
+    {
+        $url = 'http://192.168.10.10/members/formal/';
+        $temporary_id = md5(Hash::get($data, 'email'));
+        $url .= $temporary_id;
+
+        $temporary = TableRegistry::get('Temporary');
+        $entity = $temporary->newEntity($data, ['validate' => false]);
+        $entity->temporary_id = $temporary_id;
+        $entity->created = date('Y-m-d H:i:s');
+
+        if (!$temporary->save($entity)) {
+            throw new \Exception('保存に失敗しました。');
+        }
+
+        $entity->url = $url;
+        $this->getMailer('Users')->send('temporary', [$entity]);
+
+        return true;
+
     }
 }

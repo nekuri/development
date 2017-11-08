@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Datasource\ConnectionManager;
 
 /**
  * Members Controller
@@ -50,16 +51,20 @@ class MembersController extends AppController
      */
     public function add()
     {
-        $this->loadModel('Temporary');
-        $member = $this->Temporary->newEntity();
+        $member = $this->Members->newEntity();
         if ($this->request->is('post')) {
-            $member = $this->Temporary->patchEntity($member, $this->request->getData());
-            if ($this->Temporary->save($member)) {
-                $this->Flash->success(__('本登録用のメールを送りました。'));
+            try {
+                $member = $this->Members->patchEntity($member, $this->request->getData(), ['validate' => false]);
+                if (!empty($member->errors())) {
+                    throw new \Exception('入力内容にエラーがあります。');
+                }
 
+                $this->Members->saveAndSendEmail($this->request->getData());
+                $this->Flash->success(__('本登録用のメールを送りました。'));
                 return $this->redirect(['action' => 'index']);
+            } catch (\Exception $e) {
+                $this->Flash->error(__($e->getMessage()));
             }
-            $this->Flash->error(__('The member could not be saved. Please, try again.'));
         }
         $this->set(compact('member'));
         $this->set('_serialize', ['member']);
