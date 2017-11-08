@@ -103,7 +103,8 @@ class MembersTable extends Table
     public function saveAndSendEmail($data)
     {
         $url = 'http://192.168.10.10/members/formal/';
-        $temporary_id = md5(Hash::get($data, 'email'));
+        $Utils = TableRegistry::get('Utils');
+        $temporary_id = md5($Utils->makeRandStr());
         $url .= $temporary_id;
 
         $temporary = TableRegistry::get('Temporary');
