@@ -1,5 +1,7 @@
 <?php
 
+const FORMAL_REGISTER_URL = 'http://192.168.10.10/members/formal/';
+
 return [
     'Datasources' => [
         'default' => [

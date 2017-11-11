@@ -1,5 +1,7 @@
 <?php
 
+const FORMAL_REGISTER_URL = 'http://tdevelop.php.xdomain.jp/src/members/formal/';
+
 return [
     'Datasources' => [
         'default' => [
