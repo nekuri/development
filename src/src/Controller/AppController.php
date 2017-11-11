@@ -86,6 +86,8 @@ class AppController extends Controller
             'actions' => ['index']
         ]);
 
+        $this->Session = $this->request->session();
+
         $this->viewBuilder()->setLayout('anime_layout');
     }
 

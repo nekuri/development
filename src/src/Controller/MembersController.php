@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
+use Cake\ORM\TableRegistry;
 
 /**
  * Members Controller
@@ -25,23 +26,6 @@ class MembersController extends AppController
 
         $this->set(compact('members'));
         $this->set('_serialize', ['members']);
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Member id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $member = $this->Members->get($id, [
-            'contain' => []
-        ]);
-
-        $this->set('member', $member);
-        $this->set('_serialize', ['member']);
     }
 
     /**
@@ -71,47 +55,76 @@ class MembersController extends AppController
     }
 
     /**
-     * Edit method
+     * 本登録画面
      *
-     * @param string|null $id Member id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @param [type] $temporary_id
+     * @return void
      */
-    public function edit($id = null)
+    public function formal($temporary_id = null)
     {
-        $member = $this->Members->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $member = $this->Members->patchEntity($member, $this->request->getData());
-            if ($this->Members->save($member)) {
-                $this->Flash->success(__('The member has been saved.'));
+        if (isset($temporary_id)) {
+            $this->Session->delete('to_save');
+            $result = $this->Members->findTemporaryEmail($temporary_id);
 
-                return $this->redirect(['action' => 'index']);
+            if (!$result) {
+                $this->redirect(['action' => 'add']);
+                $this->Flash->error('仮登録情報が取得できませんでした。');
+                return;
             }
-            $this->Flash->error(__('The member could not be saved. Please, try again.'));
+
+            $this->Session->write('temporary_id', $temporary_id);
+            $this->redirect(['action' => 'formal']);
+            return;
+        }
+
+        if (!$this->Session->check('temporary_id')) {
+            $this->redirect(['action' => 'add']);
+            $this->Flash->error('仮登録情報が取得できませんでした。');
+            return;
+        }
+
+        $to_save = $this->Session->consume('to_save');
+        $member = $this->Members->newEntity($to_save, ['validate' => false]);
+
+        if ($this->request->is('post')) {
+            try {
+                $to_save = $this->request->getData();
+                $member = $this->Members->patchEntity($member, $to_save);
+
+                if (!empty($member->errors())) {
+                    throw new \Exception('入力内容が正しくありません。');
+                }
+
+                $this->Session->write('to_save', $to_save);
+                $this->redirect(['action' => 'confirm']);
+                return;
+            } catch (\Exception $e) {
+                $this->Flash->error($e->getMessage());
+            }
         }
         $this->set(compact('member'));
-        $this->set('_serialize', ['member']);
     }
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Member id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
+    public function confirm()
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $member = $this->Members->get($id);
-        if ($this->Members->delete($member)) {
-            $this->Flash->success(__('The member has been deleted.'));
-        } else {
-            $this->Flash->error(__('The member could not be deleted. Please, try again.'));
+        if (!$this->Session->check('to_save')) {
+            $this->redirect(['action' => 'add']);
+            return;
         }
 
-        return $this->redirect(['action' => 'index']);
+        $to_save = $this->Session->read('to_save');
+        $email = $this->Members->findTemporaryEmail($this->Session->read('temporary_id'));
+        $member = $this->Members->newEntity($to_save, ['validate' => false]);
+        $member->email = $email;
+
+        if ($this->request->is('post')) {
+            $this->Session->delete('to_save');
+            $this->Session->delete('temporary_id');
+            $this->Flash->success('本登録が完了しました。');
+            $this->redirect(['action' => 'add']);
+            return;
+        }
+
+        $this->set(compact('member'));
     }
 }

@@ -55,33 +55,20 @@ class MembersTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
-
-        $validator
-            ->scalar('name')
             ->requirePresence('name', 'create')
-            ->notEmpty('name');
+            ->notEmpty('name', '項目が入力されていません。');
 
         $validator
-            ->email('email')
-            ->requirePresence('email', 'create')
-            ->notEmpty('email');
-
-        $validator
-            ->scalar('password')
             ->requirePresence('password', 'create')
-            ->notEmpty('password');
+            ->notEmpty('password', '項目が入力されていません。');
 
         $validator
-            ->integer('secret_kind')
             ->requirePresence('secret_kind', 'create')
-            ->notEmpty('secret_kind');
+            ->notEmpty('secret_kind', '項目が入力されていません。');
 
         $validator
-            ->scalar('secret_question')
             ->requirePresence('secret_question', 'create')
-            ->notEmpty('secret_question');
+            ->notEmpty('secret_question', '項目が入力されていません。');
 
         return $validator;
     }
@@ -121,5 +108,13 @@ class MembersTable extends Table
 
         return true;
 
+    }
+
+    public function findTemporaryEmail($temporary_id)
+    {
+        $temporary = TableRegistry::get('Temporary');
+        $result = $temporary->find()->where(['temporary_id' => $temporary_id])->first();
+
+        return $result->email;
     }
 }

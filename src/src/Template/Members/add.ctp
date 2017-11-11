@@ -9,6 +9,7 @@
     </ul>
 </nav>
 <main role="main" class="col-sm-9 ml-sm-auto col-md-10 pt-3">
+<?= $this->Flash->render() ?>
 <h2>仮登録画面</h2>
 <p>登録するメールアドレスを入力してください</p>
     <?= $this->Form->create($member) ?>
