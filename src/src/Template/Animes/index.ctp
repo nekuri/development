@@ -41,6 +41,7 @@
     </ul>
     </nav>
 <main role="main" class="col-sm-9 ml-sm-auto col-md-10 pt-3">
+<?= $this->Flash->render() ?>
     <?php if (isset($title)) : ?>
     <h1>検索用語:<?= h($title) ?></h1>
     <?php else : ?>

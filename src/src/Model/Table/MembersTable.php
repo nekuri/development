@@ -87,29 +87,53 @@ class MembersTable extends Table
         return $rules;
     }
 
+    /**
+     * 保存とメール送信を行う
+     *
+     * @param object $data ユーザー情報
+     * @return bool
+     */
     public function saveAndSendEmail($data)
     {
-        $url = 'http://192.168.10.10/members/formal/';
-        $Utils = TableRegistry::get('Utils');
-        $temporary_id = md5($Utils->makeRandStr());
-        $url .= $temporary_id;
+        if (isset($data->password)) { //本登録の場合
+            $this->connection()->begin();
+            if (!$this->save($data)) {
+                $this->connection()->rollback();
+                throw new \Exception('保存に失敗しました。');
+            }
+            $this->connection()->commit();
+        } else { //仮登録の場合
+            $url = FORMAL_REGISTER_URL;
+            $Utils = TableRegistry::get('Utils');
+            $temporary = TableRegistry::get('Temporary');
 
-        $temporary = TableRegistry::get('Temporary');
-        $entity = $temporary->newEntity($data, ['validate' => false]);
-        $entity->temporary_id = $temporary_id;
-        $entity->created = date('Y-m-d H:i:s');
+            $temporary_id = md5($Utils->makeRandStr());
+            $url .= $temporary_id;
 
-        if (!$temporary->save($entity)) {
-            throw new \Exception('保存に失敗しました。');
+            $entity = $temporary->newEntity($data, ['validate' => false]);
+            $entity->temporary_id = $temporary_id;
+            $entity->created = date('Y-m-d H:i:s');
+
+            $temporary->connection()->begin();
+            if (!$temporary->save($entity)) {
+                $temporary->connection()->rollback();
+                throw new \Exception('保存に失敗しました。');
+            }
+
+            $entity->url = $url;
+            $this->getMailer('Users')->send('temporary', [$entity]);
+            $temporary->connection()->commit();
         }
 
-        $entity->url = $url;
-        $this->getMailer('Users')->send('temporary', [$entity]);
-
         return true;
-
     }
 
+    /**
+     * 仮登録テーブルからメールアドレスを取得する
+     *
+     * @param string $temporary_id 仮登録ID
+     * @return string
+     */
     public function findTemporaryEmail($temporary_id)
     {
         $temporary = TableRegistry::get('Temporary');

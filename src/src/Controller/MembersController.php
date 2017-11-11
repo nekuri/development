@@ -14,7 +14,6 @@ use Cake\ORM\TableRegistry;
  */
 class MembersController extends AppController
 {
-
     /**
      * Index method
      *
@@ -45,7 +44,8 @@ class MembersController extends AppController
 
                 $this->Members->saveAndSendEmail($this->request->getData());
                 $this->Flash->success(__('本登録用のメールを送りました。'));
-                return $this->redirect(['action' => 'index']);
+
+                return $this->redirect(['controller' => 'animes', 'action' => 'index']);
             } catch (\Exception $e) {
                 $this->Flash->error(__($e->getMessage()));
             }
@@ -57,29 +57,26 @@ class MembersController extends AppController
     /**
      * 本登録画面
      *
-     * @param [type] $temporary_id
+     * @param string $temporary_id 仮登録ID
+     *
      * @return void
      */
     public function formal($temporary_id = null)
     {
         if (isset($temporary_id)) {
             $this->Session->delete('to_save');
-            $result = $this->Members->findTemporaryEmail($temporary_id);
-
-            if (!$result) {
-                $this->redirect(['action' => 'add']);
-                $this->Flash->error('仮登録情報が取得できませんでした。');
-                return;
-            }
 
             $this->Session->write('temporary_id', $temporary_id);
             $this->redirect(['action' => 'formal']);
+
             return;
         }
 
-        if (!$this->Session->check('temporary_id')) {
+        $result = $this->Members->findTemporaryEmail($this->Session->read('temporary_id'));
+        if (!$this->Session->check('temporary_id') || !$result) {
             $this->redirect(['action' => 'add']);
             $this->Flash->error('仮登録情報が取得できませんでした。');
+
             return;
         }
 
@@ -97,6 +94,7 @@ class MembersController extends AppController
 
                 $this->Session->write('to_save', $to_save);
                 $this->redirect(['action' => 'confirm']);
+
                 return;
             } catch (\Exception $e) {
                 $this->Flash->error($e->getMessage());
@@ -105,10 +103,16 @@ class MembersController extends AppController
         $this->set(compact('member'));
     }
 
+    /**
+     * 確認画面
+     *
+     * @return void
+     */
     public function confirm()
     {
         if (!$this->Session->check('to_save')) {
             $this->redirect(['action' => 'add']);
+
             return;
         }
 
@@ -118,10 +122,16 @@ class MembersController extends AppController
         $member->email = $email;
 
         if ($this->request->is('post')) {
-            $this->Session->delete('to_save');
-            $this->Session->delete('temporary_id');
-            $this->Flash->success('本登録が完了しました。');
-            $this->redirect(['action' => 'add']);
+            try {
+                $this->Members->saveAndSendEmail($member);
+                $this->Session->delete('to_save');
+                $this->Session->delete('temporary_id');
+                $this->Flash->success('本登録が完了しました。');
+            } catch (\Exception $e) {
+                $this->Flash->error($e->getMessage());
+            }
+            $this->redirect(['controller' => 'animes', 'action' => 'index']);
+
             return;
         }
 
