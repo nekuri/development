@@ -1,15 +1,15 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Mailer\Email;
+// MailerAwareTrait追加
+use Cake\Mailer\MailerAwareTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
 use Cake\ORM\TableRegistry;
-use Cake\Mailer\Email;
 use Cake\Utility\Hash;
-// MailerAwareTrait追加
-use Cake\Mailer\MailerAwareTrait;
+use Cake\Validation\Validator;
 
 /**
  * Members Model
@@ -95,17 +95,21 @@ class MembersTable extends Table
      */
     public function saveAndSendEmail($data)
     {
+        $temporary = TableRegistry::get('Temporary');
+
         if (isset($data->password)) { //本登録の場合
             $this->connection()->begin();
             if (!$this->save($data)) {
                 $this->connection()->rollback();
                 throw new \Exception('保存に失敗しました。');
             }
+            $data->url = LOGIN_URL;
+            $this->getMailer('Users')->send('register', [$data]);
+            $temporary->deleteAll(['email' => $data->email]);
             $this->connection()->commit();
         } else { //仮登録の場合
             $url = FORMAL_REGISTER_URL;
             $Utils = TableRegistry::get('Utils');
-            $temporary = TableRegistry::get('Temporary');
 
             $temporary_id = md5($Utils->makeRandStr());
             $url .= $temporary_id;
