@@ -83,6 +83,7 @@ class MembersController extends AppController
 
         $to_save = $this->Session->consume('to_save');
         $member = $this->Members->newEntity($to_save, ['validate' => false]);
+        unset($member->password);
 
         if ($this->request->is('post')) {
             try {
