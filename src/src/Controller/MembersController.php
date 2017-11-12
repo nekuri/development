@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 
 /**
  * Members Controller
@@ -120,6 +121,8 @@ class MembersController extends AppController
         $email = $this->Members->findTemporaryEmail($this->Session->read('temporary_id'));
         $member = $this->Members->newEntity($to_save, ['validate' => false]);
         $member->email = $email;
+        //メール送信用に、平文のパスワードをセット
+        $member->plaintext_password = Hash::get($to_save, 'password');
 
         if ($this->request->is('post')) {
             try {

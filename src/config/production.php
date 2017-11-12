@@ -1,6 +1,7 @@
 <?php
 
 const FORMAL_REGISTER_URL = 'http://tdevelop.php.xdomain.jp/src/members/formal/';
+const LOGIN_URL = 'http://tdevelop.php.xdomain.jp/src/members/login';
 
 return [
     'Datasources' => [
