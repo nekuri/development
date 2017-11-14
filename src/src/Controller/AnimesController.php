@@ -47,6 +47,7 @@ class AnimesController extends AppController
                 }
             }
         }
+        $this->Reviews = TableRegistry::get('Reviews');
     }
 
     /**
@@ -103,16 +104,23 @@ class AnimesController extends AppController
      */
     public function view($id = null)
     {
-        $animes = $this->Animes->find('all')->where(['Animes.api_id' => $id])->contain(['Reviews']);
+        $animes = $this->Animes->find('all')->where(['Animes.api_id' => $id]);
+        $reviews = $this->Reviews->find()->where(['Reviews.anime_id' => $id]);
+        $review_evalution = $reviews->all();
+        $reviews = $this->paginate($reviews, [
+            'limit' => '5',
+        ]);
+
         $anime = $animes->first();
         if (is_null($anime)) {
             $this->redirect(['action' => 'index']);
+
             return;
         }
 
-        if (!empty($anime->reviews)) {
+        if (!empty($review_evalution)) {
             $evalution = [];
-            foreach ($anime->reviews as $review) {
+            foreach ($review_evalution as $review) {
                 $evalution[] = $review->evalution;
             }
             $sum = array_sum($evalution);
@@ -120,7 +128,7 @@ class AnimesController extends AppController
             $avg_evalution = round($sum / $cnt);
             $this->set('avg_evalution', $avg_evalution);
         }
-        $this->set('anime', $anime);
+        $this->set(compact('anime', 'reviews'));
         $this->set('_serialize', ['anime']);
         $this->set('anime_season', Configure::read('Common.anime_season'));
     }
