@@ -106,10 +106,10 @@ class AnimesController extends AppController
     {
         $animes = $this->Animes->find('all')->where(['Animes.api_id' => $id]);
         $reviews = $this->Reviews->find()->where(['Reviews.anime_id' => $id]);
-        $review_evalution = $reviews->all();
+        $review_evalution = $reviews->all()->toArray();
         $reviews = $this->paginate($reviews, [
             'limit' => '5',
-        ]);
+        ])->toArray();
 
         $anime = $animes->first();
         if (is_null($anime)) {
