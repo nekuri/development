@@ -74,6 +74,46 @@ class MembersTable extends Table
     }
 
     /**
+     * 仮登録バリデーション ルール
+     *
+     * @param \Cake\Validation\Validator $validator Validator instance.
+     * @return \Cake\Validation\Validator
+     */
+    public function validationTemporary($validator)
+    {
+        $validator->provider('customProvider', 'App\Model\Validation\CustomValidation');
+
+        $validator
+            ->requirePresence('email', 'create')
+            ->notEmpty('email', '項目が入力されていません。')
+            ->add('email', [
+                'email' => [
+                    'rule' => 'email',
+                    'message' => 'メールアドレスの形式で入力してください。',
+                    'last' => true,
+                ],
+                'unique' => [
+                    'rule' => ['isEmailUnique'],
+                    'provider' => 'customProvider',
+                    'message' => 'すでに使用されているメールアドレスです。',
+                    'last' => true,
+                ]
+            ]);
+
+        $validator
+            ->notEmpty('email_confirm', '項目が入力されていません。')
+            ->add('email_confirm', [
+                'compare' => [
+                    'rule' => ['compareWith', 'email'],
+                    'message' => 'メールアドレスが一致しません。',
+                    'last' => true,
+                ],
+            ]);
+
+        return $validator;
+    }
+
+    /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
      *

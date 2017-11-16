@@ -38,7 +38,7 @@ class MembersController extends AppController
         $member = $this->Members->newEntity();
         if ($this->request->is('post')) {
             try {
-                $member = $this->Members->patchEntity($member, $this->request->getData(), ['validate' => false]);
+                $member = $this->Members->patchEntity($member, $this->request->getData(), ['validate' => 'temporary']);
                 if (!empty($member->errors())) {
                     throw new \Exception('入力内容にエラーがあります。');
                 }

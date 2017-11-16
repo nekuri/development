@@ -12,7 +12,7 @@
 <?= $this->Flash->render() ?>
 <h2>仮登録画面</h2>
 <p>登録するメールアドレスを入力してください</p>
-    <?= $this->Form->create($member) ?>
+    <?= $this->Form->create($member, ['novalidate' => true]) ?>
 <table class="table">
     <tr>
     <th>メールアドレス</th><td><?= $this->Form->input('email', ['label' => false]) ?></td>
