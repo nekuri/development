@@ -2,6 +2,7 @@
 
 const FORMAL_REGISTER_URL = 'http://192.168.10.10/members/formal/';
 const LOGIN_URL = 'http://192.168.10.10/members/login';
+const REMIND_JUDGMENT_TIME = '+10 minute';
 
 return [
     'Datasources' => [

@@ -1,6 +1,7 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\I18n\Time;
 use Cake\Mailer\Email;
 // MailerAwareTrait追加
 use Cake\Mailer\MailerAwareTrait;
@@ -149,12 +150,14 @@ class MembersTable extends Table
             $this->connection()->commit();
         } else { //仮登録の場合
             $url = FORMAL_REGISTER_URL;
+            $timestamp = new Time(REMIND_JUDGMENT_TIME);
             $Utils = TableRegistry::get('Utils');
 
             $temporary_id = md5($Utils->makeRandStr());
             $url .= $temporary_id;
 
             $entity = $temporary->newEntity($data, ['validate' => false]);
+            $entity->expire = $timestamp;
             $entity->temporary_id = $temporary_id;
             $entity->created = date('Y-m-d H:i:s');
 
@@ -181,7 +184,11 @@ class MembersTable extends Table
     public function findTemporaryEmail($temporary_id)
     {
         $temporary = TableRegistry::get('Temporary');
-        $result = $temporary->find()->where(['temporary_id' => $temporary_id])->first();
+        $result = $temporary->find()->where([
+            'temporary_id' => $temporary_id,
+            'expire >' => Time::now()->i18nFormat('yyyy-MM-dd HH:mm:ss')
+        ])
+        ->first();
 
         return $result->email;
     }

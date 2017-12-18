@@ -2,6 +2,7 @@
 
 const FORMAL_REGISTER_URL = 'http://tdevelop.php.xdomain.jp/src/members/formal/';
 const LOGIN_URL = 'http://tdevelop.php.xdomain.jp/src/members/login';
+const REMIND_JUDGMENT_TIME = '+24 minute';
 
 return [
     'Datasources' => [
