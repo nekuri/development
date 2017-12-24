@@ -8,6 +8,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Utility\Hash;
 use Search\Manager;
 use \Exception;
 
@@ -170,5 +171,23 @@ class AnimesTable extends Table
         }
 
         return $this->newEntities($data);
+    }
+
+    /**
+     * 検索を実行する
+     *
+     * @param array $data getパラメータ
+     * @return object
+     */
+    public function execQuery($data)
+    {
+        $title = Hash::get($data, 'title');
+        if (is_null($title) || empty($title)) {
+            return $this->find('all');
+        }
+
+        $conditions = ['Animes.title LIKE' => "%{$title}%"];
+
+        return $this->find()->where($conditions);
     }
 }

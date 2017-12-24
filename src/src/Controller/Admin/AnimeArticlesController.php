@@ -28,8 +28,16 @@ class AnimeArticlesController extends AppController
 
     public function index()
     {
-        $result = $this->Animes->find('all');
-        $animes = $this->paginate($result);
+        try {
+            $query = $this->request->query;
+            $result = $this->Animes->execQuery($query);
+            $this->request->data = $query;
+
+            $animes = $this->paginate($result)->toArray();
+        } catch (NotFoundException $e) {
+            return $this->redirect(['action' => 'index']);
+        }
+
         $this->set(compact('animes'));
     }
 
