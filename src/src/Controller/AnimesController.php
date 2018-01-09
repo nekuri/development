@@ -57,7 +57,7 @@ class AnimesController extends AppController
      */
     public function index()
     {
-        $year = date('Y');
+        $year = 2017;
         $cool = Configure::read('Common.default_cool');
 
         if ($this->request->query) {
