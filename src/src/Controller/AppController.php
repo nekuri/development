@@ -81,12 +81,37 @@ class AppController extends Controller
          */
         $this->loadComponent('Security');
         $this->loadComponent('Csrf');
+        $this->loadComponent('Auth', [
+            'loginRedirect' => [
+                'controller' => 'animes',
+                'action' => 'index'
+            ],
+            'logoutRedirect' => [
+                'controller' => 'members',
+                'action' => 'login',
+            ],
+            'loginAction' => [
+                'controller' => 'Members',
+                'action' => 'login',
+            ],
+            'authenticate' => [
+                'Form' => [
+                    'userModel' => 'Members',
+                    'fields' => ['username' => 'email', 'password' => 'password'],
+                ]
+            ]
+        ]);
 
         $this->loadComponent('Search.Prg', [
             'actions' => ['index']
         ]);
 
         $this->Session = $this->request->session();
+
+        $auth = $this->Auth->user();
+        if (isset($auth)) {
+            $this->set(compact('auth'));
+        }
 
         $this->viewBuilder()->setLayout('anime_layout');
     }
